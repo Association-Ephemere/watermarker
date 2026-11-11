@@ -4,6 +4,15 @@ import sys
 
 import watermarker
 
+
+def treat_image(p):
+    img = watermarker.load_image(p)
+
+    img_wm = watermarker.apply_watermark(img, wm, 0.09, (0.02, 0.02))
+
+    img_wm.save(os.path.join("data/output/", f))
+
+
 if __name__ == "__main__":
     # args = sys.argv
 
@@ -17,20 +26,24 @@ if __name__ == "__main__":
     if not os.path.exists("data/output"):
         os.mkdir("data/output")
 
-    for f in os.listdir("data/input"):
+    files = os.listdir("data/input")
+
+    for i in range(len(files)):
+        f = files[i]
+
         if f == ".gitkeep":
             continue
+
+        print(f"Starting {f}...", end=" ",flush=True)
 
         p = os.path.join("data/input/", f)
 
         if not os.path.exists(p):
             raise Exception(f"\"{p}\" does not exist")
 
-        img = watermarker.load_image(p)
+        treat_image(p)
 
-        img_wm = watermarker.apply_watermark(img, wm, 0.09, (0.02, 0.02))
-
-        img_wm.save(os.path.join("data/output/", f))
+        print(f"Done. {round(100 * i / len(files), 2)}%",flush=True)
 
         
     

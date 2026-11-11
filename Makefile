@@ -8,7 +8,7 @@ save_dependencies:
 	pipreqs tests --savepath requirements/tests.txt
 
 run: install
-	python src/main.py $(EXTRA_ARGS)
+	python src/main.py
 
 test: install 
 	@pytest 

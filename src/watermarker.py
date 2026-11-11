@@ -1,4 +1,4 @@
-from PIL import Image, ImageFile
+from PIL import Image, ImageFile, ImageOps
 import math
 import os
 import sys
@@ -6,8 +6,8 @@ from path import Path
 
 
 
-def load_image(path : str) -> ImageFile:
-    return Image.open(path)
+def load_image(path : str) -> Image.Image:
+    return ImageOps.exif_transpose(Image.open(path))
 
 def get_watermark():
     wm_path = os.path.join(Path((__file__)).parent, "assets/watermark/watermark.png")
@@ -18,7 +18,9 @@ def apply_watermark(img: Image.Image, wm : Image.Image, x_ratio: float, margin: 
     if wm is None:
         wm = get_watermark()
 
-    img_ref = math.sqrt(img.width * img.height)
+    result = ImageOps.exif_transpose(img)
+
+    img_ref = math.sqrt(result.width * result.height)
     wm_ref = math.sqrt(wm.width * wm.height)
     scale = (img_ref * x_ratio) / wm_ref
 
@@ -29,10 +31,9 @@ def apply_watermark(img: Image.Image, wm : Image.Image, x_ratio: float, margin: 
     margin_x = round(img_ref * margin[0])
     margin_y = round(img_ref * margin[1])
 
-    pos_x = img.width - wm_width - margin_x
-    pos_y = img.height - wm_height - margin_y
+    pos_x = result.width - wm_width - margin_x
+    pos_y = result.height - wm_height - margin_y
 
-    result = img.copy()
     result.paste(wm_resized, (pos_x, pos_y), wm_resized)
 
     return result
